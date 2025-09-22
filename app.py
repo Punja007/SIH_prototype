@@ -8,6 +8,7 @@ from langchain_groq import ChatGroq
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
 from langchain.prompts import PromptTemplate
+from langchain.schema import HumanMessage, AIMessage
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import ConversationalRetrievalChain, LLMChain
@@ -52,19 +53,25 @@ qa_prompt_template = ChatPromptTemplate.from_messages([
 ])
 
 
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True, output_key="answer")
-
-# 2️⃣ Basic retriever
 retriever = vector_store.as_retriever(search_kwargs={"k": 3})
 
-# 3️⃣ Conversational Retrieval Chain with query rewriting
+
+if "memory" not in st.session_state:
+    st.session_state.memory = ConversationBufferMemory(
+        memory_key="chat_history",
+        return_messages=True,
+        output_key="answer"
+    )
+
+memory = st.session_state.memory
+
 qa_chain = ConversationalRetrievalChain.from_llm(
     llm=llm,
     retriever=retriever,
     memory=memory,
     return_source_documents=True,
-    condense_question_prompt=q_prompt_template,  # <--- here you pass your query-rewriting prompt
-    combine_docs_chain_kwargs={"prompt": qa_prompt_template}  # answer generation
+    condense_question_prompt=q_prompt_template,
+    combine_docs_chain_kwargs={"prompt": qa_prompt_template} 
 )
 
 
@@ -85,8 +92,17 @@ if prompt:=st.chat_input():
     st.session_state.messages.append({'role' : 'user', 'content' : prompt})
     st.chat_message('user').write(prompt)
 
+    chat_history_msgs = []
+    for msg in st.session_state['messages']:
+        if msg['role'] == 'user':
+            chat_history_msgs.append(HumanMessage(content=msg['content']))
+        else:
+            chat_history_msgs.append(AIMessage(content=msg['content']))
+
     
     with st.chat_message('assistant'):
-        response = qa_chain({"question": prompt})
+        response = qa_chain({"question": prompt,
+                            "chat_history": chat_history_msgs})
         st.session_state.messages.append({'role':'assistant', 'content': response['answer']})
         st.write(response['answer'])
+        

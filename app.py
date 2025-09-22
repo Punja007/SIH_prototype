@@ -33,7 +33,7 @@ embedding= HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2')
 vector_store = Chroma.from_documents(
     documents=chunks,
     embedding=embedding,
-    persist_directory="db",  # optional, for persistence
+    persist_directory=None,  # optional, for persistence
     client_settings={
         "chroma_db_impl": "duckdb+parquet"
     }

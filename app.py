@@ -30,7 +30,14 @@ txt = TextLoader('FAQ.txt').load()
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 chunks = splitter.split_documents(txt)
 embedding= HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2')
-vector_store = Chroma.from_documents(documents=chunks, embedding=embedding)
+vector_store = Chroma.from_documents(
+    documents=chunks,
+    embedding=embedding,
+    persist_directory="db",  # optional, for persistence
+    client_settings={
+        "chroma_db_impl": "duckdb+parquet"
+    }
+)
 
 
 

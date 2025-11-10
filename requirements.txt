@@ -6,7 +6,7 @@ langchain-community
 langchain-text-splitters
 langchain-groq
 
-chromadb==0.5.11
+chromadb==0.4.24
 faiss-cpu
 sentence-transformers
 duckdb

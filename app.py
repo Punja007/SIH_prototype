@@ -1,14 +1,12 @@
 import streamlit as st
-import streamlit as  st
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import TextLoader
 from langchain_community.vectorstores import Chroma
-from langchain.callbacks import StreamlitCallbackHandler
+from langchain_community.callbacks.streamlit import StreamlitCallbackHandler
 from langchain_groq import ChatGroq
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
-from langchain.prompts import PromptTemplate
-from langchain.schema import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain.chains import ConversationalRetrievalChain, LLMChain
@@ -16,8 +14,10 @@ from langchain.chains.history_aware_retriever import create_history_aware_retrie
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain.memory import ConversationBufferMemory
+from chromadb.config import Settings
 from dotenv import load_dotenv
 import os
+
 load_dotenv()
 groq_api = os.getenv('GROQ_API_KEY')
 os.environ['HF_TOKEN'] = os.getenv('HF_TOKEN')
@@ -30,14 +30,17 @@ txt = TextLoader('FAQ.txt').load()
 splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 chunks = splitter.split_documents(txt)
 embedding= HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2')
+client_settings = Settings(
+    chroma_db_impl="duckdb+parquet",
+    persist_directory=None,
+)
+
 vector_store = Chroma.from_documents(
     documents=chunks,
     embedding=embedding,
-    persist_directory=None,  # optional, for persistence
-    client_settings={
-        "chroma_db_impl": "duckdb+parquet"
-    }
+    client_settings=client_settings
 )
+
 
 
 

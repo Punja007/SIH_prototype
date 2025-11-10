@@ -34,7 +34,9 @@ embedding= HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2')
 vector_store = Chroma.from_documents(
     documents=chunks,
     embedding=embedding,
+    persist_directory=None
 )
+
 
 
 

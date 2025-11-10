@@ -31,8 +31,8 @@ splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 chunks = splitter.split_documents(txt)
 embedding= HuggingFaceEmbeddings(model_name='all-MiniLM-L6-v2')
 client_settings = Settings(
-    chroma_db_impl="duckdb+parquet",
     persist_directory=None,
+    is_persistent=False
 )
 
 vector_store = Chroma.from_documents(

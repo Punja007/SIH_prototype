@@ -10,6 +10,7 @@ chromadb==0.4.24
 faiss-cpu
 sentence-transformers
 duckdb
+numpy<2.0
 
 python-dotenv
 ipykernel

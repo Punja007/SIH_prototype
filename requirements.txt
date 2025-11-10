@@ -1,12 +1,15 @@
 streamlit
+
 langchain==0.3.27
-langchain-core
-langchain-community
-langchain_groq
-langchain-text-splitters
-faiss-cpu
-sentence-transformers
-ipykernel
-dotenv
-chromadb>=0.4.4
-duckdb
+langchain-core==0.3.25
+langchain-community==0.3.7
+langchain-text-splitters==0.3.2
+langchain-groq==0.1.5   # safe current version
+
+chromadb==0.5.11
+faiss-cpu==1.8.0
+sentence-transformers==3.0.1
+duckdb==1.1.2
+
+python-dotenv==1.0.1
+ipykernel==6.29.5
